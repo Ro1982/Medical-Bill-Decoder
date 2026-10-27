@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What's This Charge?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F3; --ledger-line:#DAD4C6; --ink:#232019; --ink-soft:#5C564A;
+    --teal:#3F7D6B; --teal-bg:#E7EFEA; --rust:#B2552E; --rust-bg:#F6E8DE;
+    --amber:#9A7B1E; --amber-bg:#F3EBD6; --card:#FFFFFF; --accent-line:#C9A14A;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1C1A16; --ledger-line:#3A362C; --ink:#EDE8DC; --ink-soft:#B4ADA0;
+      --teal:#6FBFA5; --teal-bg:#1E2E28; --rust:#E08757; --rust-bg:#3A271C;
+      --amber:#D8B860; --amber-bg:#352E1C; --card:#262319; --accent-line:#8A6F2E;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1C1A16; --ledger-line:#3A362C; --ink:#EDE8DC; --ink-soft:#B4ADA0;
+    --teal:#6FBFA5; --teal-bg:#1E2E28; --rust:#E08757; --rust-bg:#3A271C;
+    --amber:#D8B860; --amber-bg:#352E1C; --card:#262319; --accent-line:#8A6F2E;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Source Serif 4', Georgia, serif;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    min-height:100%;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:48px 24px 80px;}
+  header{margin-bottom:36px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); letter-spacing:0.02em;}
+  h1{font-size:clamp(30px,5vw,42px); font-weight:700; line-height:1.15; margin:8px 0 10px; max-width:16ch;}
+  .sub{color:var(--ink-soft); font-size:17px; line-height:1.5; max-width:48ch;}
+
+  .ledger{background:var(--card); border:1px solid var(--ledger-line); border-radius:3px;}
+  .input-row{display:flex; gap:0; border-bottom:1px solid var(--ledger-line);}
+  input[type=text]{
+    flex:1; border:none; background:transparent; padding:20px 18px;
+    font-family:'IBM Plex Mono',monospace; font-size:16px; color:var(--ink); outline:none;
+  }
+  input[type=text]::placeholder{color:var(--ink-soft); opacity:0.7;}
+  button#go{
+    border:none; background:var(--teal); color:#fff; padding:0 26px;
+    font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600;
+    cursor:pointer; letter-spacing:0.01em;
+  }
+  button#go:hover{filter:brightness(0.93);}
+  button#go:active{filter:brightness(0.85);}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px; padding:16px 18px;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);
+    border:1px solid var(--ledger-line); border-radius:20px; padding:6px 12px;
+    cursor:pointer; background:transparent;
+  }
+  .chip:hover{border-color:var(--teal); color:var(--teal);}
+
+  #result{margin-top:28px; display:none;}
+  .result-head{display:flex; align-items:baseline; justify-content:space-between; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:10px;}
+  .queried{font-family:'IBM Plex Mono',monospace; font-size:15px; color:var(--ink-soft);}
+  .badge{font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; padding:5px 10px; border-radius:3px; white-space:nowrap;}
+  .badge.normal{background:var(--teal-bg); color:var(--teal);}
+  .badge.verify{background:var(--rust-bg); color:var(--rust);}
+  .badge.context{background:var(--amber-bg); color:var(--amber);}
+
+  .line{display:flex; gap:16px; padding:16px 0; border-bottom:1px solid var(--ledger-line);}
+  .line:last-child{border-bottom:none;}
+  .line .label{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); width:92px; flex-shrink:0; padding-top:3px;}
+  .line .val{font-size:16.5px; line-height:1.55;}
+  .line .val.mono{font-family:'IBM Plex Mono',monospace; font-size:14px; line-height:1.6;}
+
+  footer{margin-top:40px; font-size:13px; color:var(--ink-soft); line-height:1.6; border-top:1px solid var(--ledger-line); padding-top:18px;}
+  footer p{margin:0 0 8px;}
+
+  .result-card + .result-card{margin-top:28px; padding-top:4px;}
+
+  #scan-section{margin-top:28px;}
+  .scan-box{background:var(--card); border:1px solid var(--ledger-line); border-radius:3px; padding:20px 18px;}
+  .scan-desc{color:var(--ink-soft); font-size:14.5px; margin:6px 0 16px; line-height:1.5;}
+  .scan-controls{display:flex; flex-wrap:wrap; gap:12px; align-items:center;}
+  input[type=file]{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); max-width:100%;}
+  button#scan-btn{border:none; background:var(--ink); color:var(--paper); padding:11px 20px; font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:600; border-radius:3px; cursor:pointer;}
+  button#scan-btn:hover{filter:brightness(1.15);}
+  button#scan-btn:disabled{opacity:0.5; cursor:default;}
+  #scan-status{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); margin-top:12px; min-height:16px;}
+  #scan-unavailable{display:none; font-size:14px; color:var(--ink-soft); font-style:italic; margin-top:20px;}
+  #scan-results{display:none; margin-top:8px;}
+
+  .privacy-bar{display:none; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; padding:10px 14px; background:var(--teal-bg); border-radius:3px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--teal);}
+  .privacy-bar button{border:none; background:transparent; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:600; text-decoration:underline; cursor:pointer; padding:0;}
+
+  @media (max-width:480px){
+    .wrap{padding:32px 16px 60px;}
+    .input-row{flex-direction:column;}
+    button#go{padding:14px; width:100%;}
+    .result-head{flex-direction:column; align-items:flex-start; gap:8px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">MEDICAL BILL DECODER — PROTOTYPE</div>
+    <h1>What's this charge actually mean?</h1>
+    <p class="sub">Paste a billing code or a confusing phrase from a medical bill or insurance EOB. Get a plain-English read on what it is — and whether it's worth a phone call.</p>
+  </header>
+
+  <div class="ledger">
+    <div class="input-row">
+      <input type="text" id="query" placeholder="e.g. 99214, or &quot;Not Medically Necessary&quot;" autocomplete="off">
+      <button id="go">Decode</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div id="scan-section" style="display:none;">
+    <div class="scan-box">
+      <div class="eyebrow">OR SCAN A DOCUMENT</div>
+      <p class="scan-desc">Upload a photo of a bill or EOB and we'll pull out every code and term we can find.</p>
+      <div class="scan-controls">
+        <input type="file" id="scan-file" accept="image/*">
+        <button id="scan-btn" type="button">Scan document</button>
+      </div>
+      <div id="scan-status"></div>
+    </div>
+  </div>
+  <p id="scan-unavailable">Document scanning isn't available in this view — you can still paste codes or terms above.</p>
+  <div id="scan-results"></div>
+
+  <div id="result"></div>
+
+  <div class="privacy-bar" id="privacy-bar">
+    <span id="privacy-msg">Auto-clearing soon</span>
+    <button type="button" id="clear-now-btn">Clear now</button>
+  </div>
+
+  <footer>
+    <p>This is an educational prototype, not medical or legal advice. It explains what terms commonly mean and flags patterns worth a second look — it doesn't know your specific plan or bill.</p>
+    <p>Nothing you type or upload here is saved: there's no database, cookie, or local storage behind this page. A scanned image is sent once over an encrypted (HTTPS) connection to be read, then discarded — it isn't kept by this page. Results on screen clear automatically, or tap "Clear now" at any time.</p>
+  </footer>
+</div>
+
+<script>
+const DB = {
+  "99213": {term:"CPT 99213", meaning:"An office visit for an established patient, low-to-moderate complexity — a routine check-in, follow-up, or simple new issue. Typically 15-29 minutes.", status:"normal", tip:null},
+  "99214": {term:"CPT 99214", meaning:"An office visit for an established patient, moderate complexity — more involved than a routine check-in, often with a chronic condition being managed or multiple issues addressed. Typically 30-39 minutes.", status:"normal", tip:"If your visit was quick and simple but billed as a 99214, it may be worth asking why — this code should reflect real visit complexity."},
+  "99204": {term:"CPT 99204", meaning:"An office visit for a new patient, moderate complexity. Covers your first visit to a provider with a moderately involved problem.", status:"normal", tip:null},
+  "99205": {term:"CPT 99205", meaning:"An office visit for a new patient, high complexity — your first visit, with a more serious or multi-part problem being evaluated.", status:"normal", tip:null},
+  "99395": {term:"CPT 99395", meaning:"A routine preventive physical exam for an adult (18-39), typically annual. Usually fully covered by insurance with no cost-sharing.", status:"normal", tip:"If you were charged out-of-pocket for this, double check it was billed as preventive, not as a regular office visit — that mistake is common."},
+  "80053": {term:"CPT 80053", meaning:"A comprehensive metabolic panel — a common blood test checking kidney function, liver function, blood sugar, and electrolytes.", status:"normal", tip:null},
+  "85025": {term:"CPT 85025", meaning:"A complete blood count (CBC) with differential — a standard blood test checking red cells, white cells, and platelets.", status:"normal", tip:null},
+  "71046": {term:"CPT 71046", meaning:"A chest X-ray, two views.", status:"normal", tip:null},
+  "73721": {term:"CPT 73721", meaning:"An MRI of a lower joint (like a knee) without contrast dye.", status:"context", tip:"Imaging like this is often billed separately from the facility fee — check if you're also seeing a second, larger charge for 'facility' or 'technical component.'"},
+  "36415": {term:"CPT 36415", meaning:"The simple act of drawing blood (venipuncture) — separate from whatever tests are run on that blood.", status:"normal", tip:null},
+  "90471": {term:"CPT 90471", meaning:"The administration fee for giving one vaccine — separate from the cost of the vaccine itself, which is usually billed under its own code.", status:"normal", tip:null},
+  "99070": {term:"CPT 99070", meaning:"A catch-all code for supplies used during a visit (bandages, splints, trays) beyond what's normally included.", status:"context", tip:"This vague, catch-all code is one of the more commonly disputed ones — ask for an itemized list of exactly what supplies it covers."},
+  "j3301": {term:"HCPCS J3301", meaning:"A specific injectable steroid medication (triamcinolone), billed per dose administered.", status:"normal", tip:null},
+
+  "not medically necessary": {term:"Not Medically Necessary", meaning:"Your insurer decided this service didn't meet their criteria for being required to treat your condition, so they're denying payment.", status:"verify", tip:"This is one of the most commonly successful things to appeal. Ask your insurer for the specific clinical criteria you didn't meet, and ask your provider to submit supporting documentation."},
+  "medically necessary": {term:"Not Medically Necessary", meaning:"Your insurer decided this service didn't meet their criteria for being required to treat your condition, so they're denying payment.", status:"verify", tip:"This is one of the most commonly successful things to appeal. Ask your insurer for the specific clinical criteria you didn't meet, and ask your provider to submit supporting documentation."},
+  "allowed amount": {term:"Allowed Amount", meaning:"The maximum your insurer will recognize for a service — usually less than the provider's full sticker price. This is the number your coinsurance is calculated from, not the original billed charge.", status:"normal", tip:null},
+  "adjustment": {term:"Adjustment", meaning:"The gap between what the provider originally billed and the allowed amount, which the provider has agreed to write off under their insurance contract. You should never owe this amount.", status:"normal", tip:null},
+  "coinsurance": {term:"Coinsurance", meaning:"Your share of the cost after the deductible is met, shown as a percentage (e.g. you pay 20%, insurance pays 80%) of the allowed amount.", status:"normal", tip:null},
+  "deductible": {term:"Deductible", meaning:"The amount you pay out-of-pocket each year before your insurance starts sharing costs.", status:"normal", tip:null},
+  "out-of-network": {term:"Out-of-Network", meaning:"The provider doesn't have a contract with your insurer, so there's no negotiated 'allowed amount' — you may be responsible for the full gap between what they charge and what insurance pays.", status:"verify", tip:"Check if you had a choice in the provider — if not (e.g. an ER anesthesiologist), federal 'No Surprises Act' protections may apply."},
+  "out of network": {term:"Out-of-Network", meaning:"The provider doesn't have a contract with your insurer, so there's no negotiated 'allowed amount' — you may be responsible for the full gap between what they charge and what insurance pays.", status:"verify", tip:"Check if you had a choice in the provider — if not (e.g. an ER anesthesiologist), federal 'No Surprises Act' protections may apply."},
+  "balance billing": {term:"Balance Billing", meaning:"A provider billing you for the difference between their charge and what your insurer paid — common out-of-network, and restricted by law in many surprise-billing situations.", status:"verify", tip:"Since 2022, the No Surprises Act bans this for most emergency care and certain out-of-network situations at in-network facilities. Ask if your case qualifies."},
+  "bundled": {term:"Bundled / Bundling", meaning:"Several procedures were combined into one billing code because they're normally performed together, rather than billed as separate line items.", status:"normal", tip:"If you see several separate charges for things that are usually bundled, that pattern ('unbundling') is a known billing error worth questioning."},
+  "modifier 25": {term:"Modifier 25", meaning:"A code added to a visit to indicate a separate, significant procedure was also done at the same appointment — justifying two charges instead of one.", status:"context", tip:"Ask your provider's billing office exactly what the second, separately-billed service was."},
+  "observation status": {term:"Observation Status", meaning:"You were kept at the hospital for monitoring but technically never 'admitted' as an inpatient — which changes what your insurance covers, sometimes significantly.", status:"verify", tip:"This distinction can cost patients thousands, especially with Medicare. Ask directly whether you were admitted or under observation, and from what time."},
+  "eob": {term:"Explanation of Benefits (EOB)", meaning:"A statement from your insurer showing what was billed, what they paid, and what they say you owe. It is not a bill — it's a summary of how the claim was processed.", status:"normal", tip:null},
+  "copay": {term:"Copay", meaning:"A fixed fee you pay for a specific type of visit (e.g. $30 for a primary care visit), regardless of the total cost of the service.", status:"normal", tip:null},
+  "prior authorization": {term:"Prior Authorization", meaning:"Approval your insurer requires before a service happens, confirming they'll cover it. If this wasn't obtained, the claim can be denied even for a legitimate service.", status:"verify", tip:"If denied for missing prior auth, ask if a retroactive authorization is possible — providers can sometimes request this after the fact."},
+  "upcoding": {term:"Upcoding", meaning:"Billing for a more expensive or complex version of a service than what was actually provided.", status:"verify", tip:"Compare the visit code to what actually happened at your appointment. If it doesn't match, call and ask them to review the coding."},
+  "remark code": {term:"Remark Code", meaning:"A short code on an EOB giving an additional reason for how a claim was processed — usually explained in a key at the bottom of the same page.", status:"normal", tip:null},
+  "write off": {term:"Write-off", meaning:"The portion of a charge the provider has agreed not to collect, usually because of their contract with your insurer. You should not be billed for this.", status:"normal", tip:null},
+  "facility fee": {term:"Facility Fee", meaning:"A separate charge for the use of the building/equipment, billed in addition to the doctor's own fee — common at hospital-owned clinics.", status:"context", tip:"Ask if your provider's office is hospital-owned; this fee often surprises patients who didn't expect a second charge."},
+
+  "99212": {term:"CPT 99212", meaning:"An office visit for an established patient, straightforward complexity — a very brief, simple check-in. Typically 10-19 minutes.", status:"normal", tip:null},
+  "99215": {term:"CPT 99215", meaning:"An office visit for an established patient, high complexity — a longer, more involved visit, often managing several serious or unstable conditions. Typically 40-54 minutes.", status:"context", tip:"This is the highest-level routine office visit code. If your visit was short or simple, it's worth asking what justified this level."},
+  "99202": {term:"CPT 99202", meaning:"An office visit for a new patient, straightforward complexity — a brief first visit for a simple issue.", status:"normal", tip:null},
+  "99203": {term:"CPT 99203", meaning:"An office visit for a new patient, low-to-moderate complexity — a standard first visit.", status:"normal", tip:null},
+  "99281": {term:"CPT 99281", meaning:"An emergency room visit, lowest complexity — a minor problem that didn't need much evaluation.", status:"normal", tip:null},
+  "99282": {term:"CPT 99282", meaning:"An emergency room visit, low-to-moderate complexity — a minor problem needing a bit more work-up.", status:"normal", tip:null},
+  "99283": {term:"CPT 99283", meaning:"An emergency room visit, moderate complexity — a standard ER visit requiring real evaluation and some testing.", status:"normal", tip:null},
+  "99284": {term:"CPT 99284", meaning:"An emergency room visit, high complexity — a more serious problem requiring significant work-up, often with imaging or labs.", status:"normal", tip:null},
+  "99285": {term:"CPT 99285", meaning:"An emergency room visit, highest complexity — a severe or life-threatening problem requiring extensive, urgent evaluation.", status:"context", tip:"ER visit levels are billed based on complexity of the evaluation, not how it felt in the moment. If this seems too high for what happened, ask for the documentation that supports the level."},
+  "99396": {term:"CPT 99396", meaning:"A routine preventive physical exam for an adult (40-64), typically annual. Usually fully covered with no cost-sharing.", status:"normal", tip:"If you were charged out-of-pocket, check it was billed as preventive rather than a regular office visit — this mix-up is common."},
+  "90834": {term:"CPT 90834", meaning:"A psychotherapy session, approximately 45 minutes, individual.", status:"normal", tip:null},
+  "90837": {term:"CPT 90837", meaning:"A psychotherapy session, approximately 60 minutes, individual.", status:"normal", tip:null},
+  "90791": {term:"CPT 90791", meaning:"An initial psychiatric diagnostic evaluation — the first intake session with a mental health provider, before ongoing therapy codes apply.", status:"normal", tip:null},
+  "97110": {term:"CPT 97110", meaning:"Therapeutic exercise performed during a physical therapy session, billed in 15-minute units.", status:"normal", tip:"Check how many units were billed against how long your session actually ran — this is a common area for overbilling."},
+  "97140": {term:"CPT 97140", meaning:"Manual therapy (hands-on techniques like soft tissue or joint mobilization) during a PT session, billed in 15-minute units.", status:"normal", tip:null},
+  "45378": {term:"CPT 45378", meaning:"A diagnostic colonoscopy — examining the colon without removing anything.", status:"context", tip:"If a polyp was found and removed, the code typically changes to a screening-turned-diagnostic procedure, which can affect your cost-sharing. Ask your insurer how this was processed."},
+  "81003": {term:"CPT 81003", meaning:"A basic urinalysis, automated, without microscopy — a routine urine test.", status:"normal", tip:null},
+  "80061": {term:"CPT 80061", meaning:"A lipid panel — a blood test measuring cholesterol and triglycerides.", status:"normal", tip:null},
+  "84443": {term:"CPT 84443", meaning:"A TSH test — a blood test checking thyroid function.", status:"normal", tip:null},
+  "82947": {term:"CPT 82947", meaning:"A blood glucose test — measures blood sugar at a single point in time.", status:"normal", tip:null},
+  "76700": {term:"CPT 76700", meaning:"A complete abdominal ultrasound.", status:"normal", tip:null},
+  "74177": {term:"CPT 74177", meaning:"A CT scan of the abdomen and pelvis with contrast dye.", status:"context", tip:"Contrast CT scans often generate a separate charge for the contrast material itself — check for a second line item."},
+  "29881": {term:"CPT 29881", meaning:"Knee arthroscopy with meniscus removal/repair — a minimally invasive knee surgery.", status:"normal", tip:null},
+  "59400": {term:"CPT 59400", meaning:"Routine obstetric care covering a vaginal delivery plus all prenatal and postpartum visits, billed as one bundled global package.", status:"normal", tip:"Because this is bundled, you generally shouldn't also see separate charges for routine prenatal visits included in the package."},
+  "59510": {term:"CPT 59510", meaning:"Routine obstetric care covering a C-section delivery plus all prenatal and postpartum visits, billed as one bundled global package.", status:"normal", tip:null},
+  "e0424": {term:"HCPCS E0424", meaning:"A stationary oxygen concentrator with related supplies, typically billed as a recurring rental.", status:"context", tip:"Durable medical equipment is often billed monthly — check whether you're being billed to eventually own the equipment or renting it indefinitely."},
+  "e0601": {term:"HCPCS E0601", meaning:"A CPAP machine for sleep apnea, typically billed as a rental with eventual purchase after a set number of months.", status:"normal", tip:null},
+  "a0425": {term:"HCPCS A0425", meaning:"Ground ambulance mileage, billed per mile transported.", status:"normal", tip:null},
+  "a0427": {term:"HCPCS A0427", meaning:"Advanced life support ambulance transport, emergency — the base charge for an ALS-equipped emergency ambulance response.", status:"verify", tip:"Ambulance billing is a frequent source of large surprise bills. If out-of-network, check your state's balance-billing protections and the No Surprises Act."},
+
+  "patient responsibility": {term:"Patient Responsibility", meaning:"The total amount the EOB says you personally owe after insurance processing — the sum of deductible, copay, and/or coinsurance for that claim.", status:"normal", tip:"Confirm this matches what the provider actually bills you — mismatches between the EOB and the provider's bill are common and worth flagging."},
+  "non-covered service": {term:"Non-Covered Service", meaning:"A service your specific plan excludes entirely, meaning insurance won't pay any portion regardless of medical necessity.", status:"verify", tip:"Ask for the exact plan exclusion language. Sometimes services are miscoded as non-covered when they should have been processed normally."},
+  "non covered": {term:"Non-Covered Service", meaning:"A service your specific plan excludes entirely, meaning insurance won't pay any portion regardless of medical necessity.", status:"verify", tip:"Ask for the exact plan exclusion language. Sometimes services are miscoded as non-covered when they should have been processed normally."},
+  "timely filing": {term:"Timely Filing", meaning:"A deadline for submitting a claim after a service happens. If a provider misses it, the insurer can deny the whole claim — and the provider usually can't bill you for their own late filing.", status:"verify", tip:"If you're billed for a timely-filing denial, point out this was the provider's error, not yours, and ask them to write it off."},
+  "coordination of benefits": {term:"Coordination of Benefits (COB)", meaning:"The process used when you're covered by more than one insurance plan, to determine which pays first (primary) and which pays second (secondary).", status:"normal", tip:"A pending COB review commonly delays claims for months. If a bill is stuck, ask whether COB is the hold-up and provide both insurers' info directly."},
+  "pre-existing condition": {term:"Pre-Existing Condition", meaning:"A health condition you had before a policy started. Under current federal law (ACA), plans can no longer deny coverage or charge more because of this for most health insurance.", status:"context", tip:"If a claim is denied citing a pre-existing condition, this is likely outdated or incorrect under current law — worth appealing directly."},
+  "usual and customary": {term:"Usual and Customary Rate", meaning:"An insurer's internal estimate of what a service typically costs in your area, used to decide how much to reimburse for out-of-network care.", status:"verify", tip:"These rates are set by the insurer with little transparency and are a common source of underpayment. You can request the data source behind the number."},
+  "claim denial": {term:"Claim Denial", meaning:"The insurer is refusing to pay for all or part of a service. The EOB should list a specific reason code explaining why.", status:"verify", tip:"Every denial has a formal appeal process with a deadline, usually printed on the EOB. Appeals succeed more often than most people expect."},
+  "in-network": {term:"In-Network", meaning:"The provider has a contract with your insurer setting negotiated, discounted rates — generally your lowest-cost option.", status:"normal", tip:null},
+  "assignment of benefits": {term:"Assignment of Benefits", meaning:"An agreement letting your insurer pay the provider directly, instead of paying you and having you pay the provider yourself.", status:"normal", tip:null},
+  "explanation of payment": {term:"Explanation of Payment (EOP)", meaning:"Similar to an EOB, but sent to the provider rather than the patient — it shows the provider exactly how much the insurer paid and why.", status:"normal", tip:null},
+  "drg": {term:"DRG (Diagnosis-Related Group)", meaning:"A hospital billing category that bundles an entire inpatient stay into one flat payment based on your diagnosis, rather than billing each service separately.", status:"normal", tip:null},
+  "place of service": {term:"Place of Service (POS) Code", meaning:"A two-digit code noting where care happened (e.g. office, hospital outpatient, ER). It affects how much insurance pays, since the same service can cost more in a hospital setting.", status:"context", tip:"If POS shows 'hospital outpatient' for what felt like a regular clinic visit, that can trigger a facility fee — worth asking about."},
+  "modifier 59": {term:"Modifier 59", meaning:"A code indicating two procedures that are normally bundled together were actually distinct and separately billable in this case.", status:"context", tip:"This modifier is one of the most audited in healthcare billing because it's sometimes misused to unbundle charges. Ask what made the two services distinct."},
+  "modifier 26": {term:"Modifier 26", meaning:"Indicates a provider is billing only for interpreting a test (like reading an X-ray), not for performing it or owning the equipment.", status:"normal", tip:null},
+  "modifier tc": {term:"Modifier TC", meaning:"The 'technical component' — billing for the equipment and staff used to perform a test, separate from the fee for interpreting the results.", status:"normal", tip:"TC and modifier 26 often appear as two separate line items for what feels like one test (e.g. one X-ray). That split is normal, not an error."},
+  "global period": {term:"Global Period", meaning:"A window after surgery (often 10 or 90 days) during which routine follow-up care is included in the original surgical charge, not billed again separately.", status:"normal", tip:"If you're billed for a routine follow-up visit within this window, ask whether it falls under the global period and should be included already."},
+  "readmission": {term:"Readmission", meaning:"Being admitted back to the hospital shortly after a discharge, often within 30 days, for a related issue.", status:"context", tip:null},
+  "grievance": {term:"Grievance", meaning:"A formal complaint to your insurer about something other than a claim denial — like customer service, access to care, or plan administration. Different from an appeal, which challenges a specific claim decision.", status:"normal", tip:null},
+  "network exception": {term:"Network Exception", meaning:"A request for your insurer to cover an out-of-network provider at in-network rates, usually because no in-network option is available or appropriate.", status:"normal", tip:"Worth requesting proactively if you need a specialist and there's genuinely no in-network provider within reasonable distance."},
+};
+
+const ALIASES = [
+  [/^j\s?-?\s?3301$/i, "j3301"]
+];
+
+function norm(s){
+  return s.trim().toLowerCase().replace(/[\s_]+/g," ").replace(/[.,;:!?"']/g,"");
+}
+
+function lookup(raw){
+  const q = norm(raw);
+  if(!q) return null;
+  if(DB[q]) return DB[q];
+  // code-only match (strip spaces/dashes)
+  const codeKey = q.replace(/[\s-]/g,"");
+  if(DB[codeKey]) return DB[codeKey];
+  for(const [key,val] of Object.entries(DB)){
+    if(q.includes(key) || key.includes(q)) return val;
+  }
+  // bare numeric CPT-looking code with no match
+  if(/^\d{5}$/.test(codeKey)){
+    return {
+      term: "CPT " + codeKey.toUpperCase(),
+      meaning: "This looks like a 5-digit CPT procedure code, but it's not in this prototype's sample set yet. CPT codes describe a specific, standardized medical service — you can look up the exact description by searching the code plus \u201cCPT code description.\u201d",
+      status: "context",
+      tip: "Compare the official description to what actually happened at your visit. A mismatch is the most common sign of a billing error."
+    };
+  }
+  if(/^[a-z]\d{4}$/i.test(codeKey)){
+    return {
+      term: "HCPCS " + codeKey.toUpperCase(),
+      meaning: "This looks like a HCPCS code (letter + 4 digits), typically used for supplies, equipment, or drugs not covered by standard CPT codes. Not in this prototype's sample set yet.",
+      status: "context",
+      tip: "Search the code plus \u201cHCPCS code description\u201d for the official definition, then check it matches what you actually received."
+    };
+  }
+  return {
+    term: raw.trim(),
+    meaning: "This exact term isn't in the prototype's sample set yet. In a full version, this would be matched against a complete CPT/HCPCS/payer-term database.",
+    status: "context",
+    tip: "Try one of the example terms below to see a full result, or search the exact phrase plus \u201cmedical billing\u201d to find its standard meaning."
+  };
+}
+
+const STATUS_LABEL = {
+  normal: {text:"Looks standard", cls:"normal"},
+  verify: {text:"Worth a call", cls:"verify"},
+  context: {text:"Depends on context", cls:"context"}
+};
+
+function resultBlockHTML(label, result){
+  const s = STATUS_LABEL[result.status] || STATUS_LABEL.context;
+  return `
+    <div class="result-head">
+      <div class="queried">${label}</div>
+      <div class="badge ${s.cls}">${s.text}</div>
+    </div>
+    <div class="line">
+      <div class="label">TERM</div>
+      <div class="val mono">${escapeHtml(result.term)}</div>
+    </div>
+    <div class="line">
+      <div class="label">MEANS</div>
+      <div class="val">${escapeHtml(result.meaning)}</div>
+    </div>
+    ${result.tip ? `<div class="line"><div class="label">DO THIS</div><div class="val">${escapeHtml(result.tip)}</div></div>` : ""}
+  `;
+}
+
+function render(raw){
+  const result = lookup(raw);
+  const el = document.getElementById("result");
+  if(!result){ el.style.display="none"; return; }
+  document.getElementById("scan-results").style.display = "none";
+  el.innerHTML = `<div class="result-card">${resultBlockHTML('You searched: "' + escapeHtml(raw.trim()) + '"', result)}</div>`;
+  el.style.display = "block";
+  scheduleAutoClear();
+}
+
+// --- Privacy: nothing here is stored anywhere, but we actively wipe the
+// on-screen results too, so sensitive terms don't linger in the browser tab. ---
+const AUTO_CLEAR_MS = 3 * 60 * 1000;
+let autoClearTimer = null;
+let countdownTimer = null;
+const privacyBar = document.getElementById("privacy-bar");
+const privacyMsg = document.getElementById("privacy-msg");
+
+function clearAllResults(){
+  document.getElementById("result").style.display = "none";
+  document.getElementById("result").innerHTML = "";
+  document.getElementById("scan-results").style.display = "none";
+  document.getElementById("scan-results").innerHTML = "";
+  document.getElementById("query").value = "";
+  scanStatus.textContent = "";
+  scanFile.value = "";
+  privacyBar.style.display = "none";
+  if(autoClearTimer){ clearTimeout(autoClearTimer); autoClearTimer = null; }
+  if(countdownTimer){ clearInterval(countdownTimer); countdownTimer = null; }
+}
+
+function scheduleAutoClear(){
+  if(autoClearTimer) clearTimeout(autoClearTimer);
+  if(countdownTimer) clearInterval(countdownTimer);
+  let remaining = Math.floor(AUTO_CLEAR_MS / 1000);
+  privacyBar.style.display = "flex";
+  const tick = () => {
+    const m = Math.floor(remaining / 60);
+    const s = String(remaining % 60).padStart(2, "0");
+    privacyMsg.textContent = `Clearing this in ${m}:${s}`;
+    remaining--;
+  };
+  tick();
+  countdownTimer = setInterval(tick, 1000);
+  autoClearTimer = setTimeout(clearAllResults, AUTO_CLEAR_MS);
+}
+
+document.getElementById("clear-now-btn").addEventListener("click", clearAllResults);
+
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "hidden"){ clearAllResults(); }
+});
+
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+document.getElementById("go").addEventListener("click", () => {
+  const v = document.getElementById("query").value;
+  if(v.trim()) render(v);
+});
+document.getElementById("query").addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){ const v = e.target.value; if(v.trim()) render(v); }
+});
+
+const EXAMPLES = ["99214", "Not Medically Necessary", "Out-of-Network", "Bundled", "Observation Status", "71046"];
+const chipsEl = document.getElementById("chips");
+EXAMPLES.forEach(ex => {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.textContent = ex;
+  b.addEventListener("click", () => {
+    document.getElementById("query").value = ex;
+    render(ex);
+  });
+  chipsEl.appendChild(b);
+});
+
+// --- Document scan (uses the optional "sample" runtime capability) ---
+let sampleFn = null;
+const scanSection = document.getElementById("scan-section");
+const scanUnavailable = document.getElementById("scan-unavailable");
+const scanFile = document.getElementById("scan-file");
+const scanBtn = document.getElementById("scan-btn");
+const scanStatus = document.getElementById("scan-status");
+const scanResultsEl = document.getElementById("scan-results");
+
+(async () => {
+  try{
+    if(window.claude && window.claude.use){
+      sampleFn = await window.claude.use("sample");
+    }
+  }catch(e){ sampleFn = null; }
+  if(sampleFn){
+    scanSection.style.display = "block";
+    scanUnavailable.style.display = "none";
+  }else{
+    scanSection.style.display = "none";
+    scanUnavailable.style.display = "block";
+  }
+})();
+
+scanFile.addEventListener("change", () => {
+  const f = scanFile.files[0];
+  scanStatus.textContent = f ? `Ready to scan: ${f.name}` : "";
+  scanResultsEl.innerHTML = "";
+  scanResultsEl.style.display = "none";
+});
+
+scanBtn.addEventListener("click", async () => {
+  const file = scanFile.files[0];
+  if(!file){ scanStatus.textContent = "Choose a photo of a bill or EOB first."; return; }
+  if(!sampleFn){ scanStatus.textContent = "Scanning isn't available in this view."; return; }
+  scanBtn.disabled = true;
+  scanStatus.textContent = "Reading the document\u2026";
+  scanResultsEl.innerHTML = "";
+  scanResultsEl.style.display = "none";
+  document.getElementById("result").style.display = "none";
+  try{
+    const prompt = "This image is a photo or scan of a medical bill or insurance Explanation of Benefits. Find every distinct CPT code, HCPCS code, and medical billing or insurance phrase visible (for example: 'Not Medically Necessary', 'Coinsurance', 'Out-of-Network', 'Adjustment', 'Deductible'). Return ONLY a JSON array of strings, nothing else. If you find nothing relevant, return an empty array.";
+    const items = await sampleFn.json(prompt, {images:[file]});
+    const list = Array.isArray(items) ? items : [];
+    if(list.length === 0){
+      scanStatus.textContent = "Didn't find any billing codes or terms in that image. Try a clearer or closer photo.";
+      scanBtn.disabled = false;
+      return;
+    }
+    const seen = new Set();
+    let html = "";
+    let count = 0;
+    list.forEach(raw => {
+      const key = norm(String(raw));
+      if(!key || seen.has(key)) return;
+      seen.add(key);
+      const result = lookup(String(raw));
+      if(result){
+        count++;
+        html += `<div class="result-card">${resultBlockHTML('Found: "' + escapeHtml(String(raw).trim()) + '"', result)}</div>`;
+      }
+    });
+    scanStatus.textContent = count > 0 ? `Found ${count} item${count===1?"":"s"}:` : "Found text, but nothing matched a known code or term.";
+    scanResultsEl.innerHTML = html;
+    scanResultsEl.style.display = count > 0 ? "block" : "none";
+    if(count > 0) scheduleAutoClear();
+  }catch(err){
+    scanStatus.textContent = "Couldn't read that image clearly \u2014 try a sharper photo, better lighting, or type the terms in manually above.";
+  }finally{
+    scanBtn.disabled = false;
+    // Drop the image reference immediately once we're done with it — it's
+    // never kept around longer than the single scan request needs it.
+    scanFile.value = "";
+  }
+});
+</script>
+</body>
+</html>
