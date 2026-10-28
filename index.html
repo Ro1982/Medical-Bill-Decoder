@@ -3,126 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>What's This Charge?</title>
+<title>index.html</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#FAF8F3; --ledger-line:#DAD4C6; --ink:#232019; --ink-soft:#5C564A;
-    --teal:#3F7D6B; --teal-bg:#E7EFEA; --rust:#B2552E; --rust-bg:#F6E8DE;
-    --amber:#9A7B1E; --amber-bg:#F3EBD6; --card:#FFFFFF; --accent-line:#C9A14A;
+    --paper:#FFF8EF; --card:#FFFFFF; --ink:#1F2A44; --ink-soft:#5B6478; --ledger-line:#E8DCCB;
+    --teal:#0F7C7A; --teal-bg:#DDF2EF; --rust:#C2410C; --rust-bg:#FDE6D8;
+    --amber:#B7791F; --amber-bg:#FDF0C9; --gold:#F2B33D;
+    --shadow:0 6px 20px rgba(31,42,68,.08);
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --paper:#1C1A16; --ledger-line:#3A362C; --ink:#EDE8DC; --ink-soft:#B4ADA0;
-      --teal:#6FBFA5; --teal-bg:#1E2E28; --rust:#E08757; --rust-bg:#3A271C;
-      --amber:#D8B860; --amber-bg:#352E1C; --card:#262319; --accent-line:#8A6F2E;
+      --paper:#171C26; --card:#1F2635; --ink:#F1EEE6; --ink-soft:#AEB4C4; --ledger-line:#333B4F;
+      --teal:#4FD3C9; --teal-bg:#123832; --rust:#F0855A; --rust-bg:#3B2013;
+      --amber:#E8C468; --amber-bg:#3A2E10; --gold:#F5C15E;
+      --shadow:0 6px 20px rgba(0,0,0,.35);
     }
   }
   :root[data-theme="dark"]{
-    --paper:#1C1A16; --ledger-line:#3A362C; --ink:#EDE8DC; --ink-soft:#B4ADA0;
-    --teal:#6FBFA5; --teal-bg:#1E2E28; --rust:#E08757; --rust-bg:#3A271C;
-    --amber:#D8B860; --amber-bg:#352E1C; --card:#262319; --accent-line:#8A6F2E;
+    --paper:#171C26; --card:#1F2635; --ink:#F1EEE6; --ink-soft:#AEB4C4; --ledger-line:#333B4F;
+    --teal:#4FD3C9; --teal-bg:#123832; --rust:#F0855A; --rust-bg:#3B2013;
+    --amber:#E8C468; --amber-bg:#3A2E10; --gold:#F5C15E;
+    --shadow:0 6px 20px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box;}
   html{scroll-padding-top:env(safe-area-inset-top,0px);}
   body{
     margin:0; background:var(--paper); color:var(--ink);
-    font-family:'Source Serif 4', Georgia, serif;
+    font-family:'Nunito', system-ui, sans-serif; font-size:17px; line-height:1.55;
     padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
     min-height:100%;
   }
-  .wrap{max-width:720px; margin:0 auto; padding:48px 24px 80px;}
-  header{margin-bottom:36px;}
-  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); letter-spacing:0.02em;}
-  h1{font-size:clamp(30px,5vw,42px); font-weight:700; line-height:1.15; margin:8px 0 10px; max-width:16ch;}
-  .sub{color:var(--ink-soft); font-size:17px; line-height:1.5; max-width:48ch;}
+  .wrap{max-width:720px; margin:0 auto; padding:28px 20px 80px;}
 
-  .ledger{background:var(--card); border:1px solid var(--ledger-line); border-radius:3px;}
-  .input-row{display:flex; gap:0; border-bottom:1px solid var(--ledger-line);}
+  .hero{
+    background:linear-gradient(135deg, var(--teal), var(--gold));
+    border-radius:16px; padding:28px 24px; margin-bottom:28px; box-shadow:var(--shadow);
+  }
+  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink); opacity:.75; letter-spacing:0.02em;}
+  .title-row{display:flex; align-items:center; gap:12px; margin:6px 0 10px;}
+  .title-row .icon{font-size:34px; line-height:1;}
+  h1{font-family:'Poppins', sans-serif; font-size:clamp(26px,5vw,36px); font-weight:800; line-height:1.15; color:var(--ink); margin:0;}
+  .sub{color:var(--ink); font-size:17px; line-height:1.55; max-width:48ch; opacity:.85;}
+
+  .card{background:var(--card); border-radius:12px; box-shadow:var(--shadow); border:1px solid var(--ledger-line);}
+
+  .ledger{}
+  .input-row{display:flex; gap:10px; padding:10px;}
   input[type=text]{
-    flex:1; border:none; background:transparent; padding:20px 18px;
-    font-family:'IBM Plex Mono',monospace; font-size:16px; color:var(--ink); outline:none;
+    flex:1; border:1px solid var(--ledger-line); border-radius:999px; background:var(--paper);
+    padding:14px 20px; font-family:'Nunito', sans-serif; font-size:17px; color:var(--ink); outline:none;
+    min-height:48px;
   }
-  input[type=text]::placeholder{color:var(--ink-soft); opacity:0.7;}
+  input[type=text]:focus{border-color:var(--teal);}
+  input[type=text]::placeholder{color:var(--ink-soft); opacity:0.8;}
   button#go{
-    border:none; background:var(--teal); color:#fff; padding:0 26px;
-    font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600;
-    cursor:pointer; letter-spacing:0.01em;
+    border:none; background:var(--teal); color:#fff; padding:0 24px; min-height:48px;
+    border-radius:999px; font-family:'Poppins', sans-serif; font-size:15px; font-weight:700;
+    cursor:pointer; white-space:nowrap; box-shadow:var(--shadow);
   }
-  button#go:hover{filter:brightness(0.93);}
-  button#go:active{filter:brightness(0.85);}
+  button#go:hover{filter:brightness(0.95);}
+  button#go:active{filter:brightness(0.88);}
 
-  .chips{display:flex; flex-wrap:wrap; gap:8px; padding:16px 18px;}
+  .trust-line{display:flex; align-items:center; gap:8px; padding:4px 18px 16px; color:var(--ink-soft); font-size:14.5px;}
+  .trust-line svg{flex-shrink:0;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px; padding:0 18px 18px;}
   .chip{
     font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);
-    border:1px solid var(--ledger-line); border-radius:20px; padding:6px 12px;
-    cursor:pointer; background:transparent;
+    border:1px solid var(--ledger-line); border-radius:999px; padding:8px 14px; min-height:36px;
+    cursor:pointer; background:var(--paper); display:inline-flex; align-items:center;
   }
   .chip:hover{border-color:var(--teal); color:var(--teal);}
 
-  #result{margin-top:28px; display:none;}
-  .result-head{display:flex; align-items:baseline; justify-content:space-between; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:10px;}
-  .queried{font-family:'IBM Plex Mono',monospace; font-size:15px; color:var(--ink-soft);}
-  .badge{font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; padding:5px 10px; border-radius:3px; white-space:nowrap;}
+  .empty-state{display:flex; align-items:center; gap:10px; margin-top:18px; padding:18px 20px; color:var(--ink-soft); font-size:16px; font-style:italic;}
+
+  #scan-section{margin-top:20px;}
+  .scan-box{padding:22px 20px;}
+  .scan-desc{color:var(--ink-soft); font-size:16px; margin:6px 0 16px; line-height:1.5;}
+  .scan-controls{display:flex; flex-wrap:wrap; gap:12px; align-items:center;}
+  input[type=file]{font-family:'Nunito',sans-serif; font-size:14px; color:var(--ink-soft); max-width:100%;}
+  button#scan-btn{
+    border:none; background:var(--ink); color:var(--paper); padding:0 22px; min-height:48px;
+    font-family:'Poppins', sans-serif; font-size:14.5px; font-weight:700; border-radius:999px; cursor:pointer;
+  }
+  button#scan-btn:hover{filter:brightness(1.2);}
+  button#scan-btn:disabled{opacity:0.5; cursor:default;}
+  #scan-status{font-family:'Nunito',sans-serif; font-size:14.5px; color:var(--ink-soft); margin-top:12px; min-height:16px;}
+  #scan-unavailable{display:none; font-size:15px; color:var(--ink-soft); font-style:italic; margin-top:20px;}
+  #scan-results{display:none; margin-top:18px;}
+
+  .how-strip{margin-top:28px; padding:22px 20px;}
+  .how-title{font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; margin:0 0 16px;}
+  .how-steps{display:flex; gap:16px; flex-wrap:wrap;}
+  .how-step{flex:1; min-width:150px; display:flex; flex-direction:column; gap:6px;}
+  .how-num{width:32px; height:32px; border-radius:999px; background:var(--teal-bg); color:var(--teal); font-family:'Poppins',sans-serif; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center;}
+  .how-step b{font-family:'Poppins',sans-serif; font-size:15px;}
+  .how-step span{color:var(--ink-soft); font-size:14.5px;}
+
+  #result{margin-top:24px; display:none;}
+  .result-card{padding:4px 4px 8px;}
+  .result-card + .result-card{margin-top:20px;}
+  .result-head{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px 14px;}
+  .queried{font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--ink-soft);}
+  .badge{
+    font-family:'Poppins',monospace; font-size:13px; font-weight:700; padding:7px 14px 7px 10px;
+    border-radius:999px; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;
+  }
   .badge.normal{background:var(--teal-bg); color:var(--teal);}
   .badge.verify{background:var(--rust-bg); color:var(--rust);}
   .badge.context{background:var(--amber-bg); color:var(--amber);}
 
-  .line{display:flex; gap:16px; padding:16px 0; border-bottom:1px solid var(--ledger-line);}
-  .line:last-child{border-bottom:none;}
+  .line{display:flex; gap:16px; padding:14px 20px; border-top:1px solid var(--ledger-line);}
   .line .label{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); width:92px; flex-shrink:0; padding-top:3px;}
-  .line .val{font-size:16.5px; line-height:1.55;}
-  .line .val.mono{font-family:'IBM Plex Mono',monospace; font-size:14px; line-height:1.6;}
+  .line .val{font-size:17px; line-height:1.55;}
+  .line .val.mono{font-family:'IBM Plex Mono',monospace; font-size:14.5px; line-height:1.6;}
 
-  footer{margin-top:40px; font-size:13px; color:var(--ink-soft); line-height:1.6; border-top:1px solid var(--ledger-line); padding-top:18px;}
-  footer p{margin:0 0 8px;}
+  .privacy-bar{display:none; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; padding:12px 18px; background:var(--teal-bg); border-radius:999px; font-family:'Nunito',sans-serif; font-size:14px; color:var(--teal); font-weight:700;}
+  .privacy-bar button{border:none; background:#fff; color:var(--teal); font-family:'Poppins',sans-serif; font-size:13px; font-weight:700; border-radius:999px; cursor:pointer; padding:8px 14px; min-height:36px;}
 
-  .result-card + .result-card{margin-top:28px; padding-top:4px;}
+  .sources{margin-top:28px; padding:22px 20px;}
+  .sources h2{font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; margin:0 0 6px;}
+  .sources .checked{color:var(--ink-soft); font-size:13.5px; margin:0 0 14px;}
+  .sources ul{margin:0; padding-left:20px; color:var(--ink-soft); font-size:15px; line-height:1.9;}
+  .sources a{color:var(--teal); font-weight:700; text-decoration:none;}
+  .sources a:hover{text-decoration:underline;}
 
-  #scan-section{margin-top:28px;}
-  .scan-box{background:var(--card); border:1px solid var(--ledger-line); border-radius:3px; padding:20px 18px;}
-  .scan-desc{color:var(--ink-soft); font-size:14.5px; margin:6px 0 16px; line-height:1.5;}
-  .scan-controls{display:flex; flex-wrap:wrap; gap:12px; align-items:center;}
-  input[type=file]{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); max-width:100%;}
-  button#scan-btn{border:none; background:var(--ink); color:var(--paper); padding:11px 20px; font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:600; border-radius:3px; cursor:pointer;}
-  button#scan-btn:hover{filter:brightness(1.15);}
-  button#scan-btn:disabled{opacity:0.5; cursor:default;}
-  #scan-status{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); margin-top:12px; min-height:16px;}
-  #scan-unavailable{display:none; font-size:14px; color:var(--ink-soft); font-style:italic; margin-top:20px;}
-  #scan-results{display:none; margin-top:8px;}
-
-  .privacy-bar{display:none; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; padding:10px 14px; background:var(--teal-bg); border-radius:3px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--teal);}
-  .privacy-bar button{border:none; background:transparent; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:600; text-decoration:underline; cursor:pointer; padding:0;}
+  footer{margin-top:28px; font-size:14.5px; color:var(--ink-soft); line-height:1.6; padding:0 4px;}
+  footer p{margin:0 0 10px;}
 
   @media (max-width:480px){
-    .wrap{padding:32px 16px 60px;}
+    .wrap{padding:20px 14px 60px;}
     .input-row{flex-direction:column;}
     button#go{padding:14px; width:100%;}
-    .result-head{flex-direction:column; align-items:flex-start; gap:8px;}
+    .result-head{flex-direction:column; align-items:flex-start; gap:10px;}
+    .how-steps{flex-direction:column;}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="eyebrow">MEDICAL BILL DECODER — PROTOTYPE</div>
-    <h1>What's this charge actually mean?</h1>
-    <p class="sub">Paste a billing code or a confusing phrase from a medical bill or insurance EOB. Get a plain-English read on what it is — and whether it's worth a phone call.</p>
-  </header>
 
-  <div class="ledger">
+  <div class="hero">
+    <div class="eyebrow">MEDICAL BILL DECODER — PROTOTYPE</div>
+    <div class="title-row">
+      <span class="icon" aria-hidden="true">🧾</span>
+      <h1>What's this charge actually mean?</h1>
+    </div>
+    <p class="sub">Paste a billing code or a confusing phrase from a medical bill or insurance EOB. Get a plain-English read on what it is — and whether it's worth a phone call.</p>
+  </div>
+
+  <div class="ledger card">
     <div class="input-row">
       <input type="text" id="query" placeholder="e.g. 99214, or &quot;Not Medically Necessary&quot;" autocomplete="off">
-      <button id="go">Decode</button>
+      <button id="go">Explain this charge</button>
+    </div>
+    <div class="trust-line">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+      <span>Nothing you type is saved</span>
     </div>
     <div class="chips" id="chips"></div>
   </div>
 
+  <div class="empty-state card" id="empty-state">
+    <span>💬</span>
+    <span>Paste anything confusing. We'll translate it.</span>
+  </div>
+
   <div id="scan-section" style="display:none;">
-    <div class="scan-box">
+    <div class="scan-box card">
       <div class="eyebrow">OR SCAN A DOCUMENT</div>
       <p class="scan-desc">Upload a photo of a bill or EOB and we'll pull out every code and term we can find.</p>
       <div class="scan-controls">
@@ -140,6 +192,25 @@
   <div class="privacy-bar" id="privacy-bar">
     <span id="privacy-msg">Auto-clearing soon</span>
     <button type="button" id="clear-now-btn">Clear now</button>
+  </div>
+
+  <div class="how-strip card">
+    <p class="how-title">How it works</p>
+    <div class="how-steps">
+      <div class="how-step"><span class="how-num">1</span><b>Paste</b><span>Drop in a code, term, or a photo of the bill.</span></div>
+      <div class="how-step"><span class="how-num">2</span><b>Read</b><span>Get a plain-English meaning and a status flag.</span></div>
+      <div class="how-step"><span class="how-num">3</span><b>Call</b><span>If it's flagged, we'll tell you what to ask.</span></div>
+    </div>
+  </div>
+
+  <div class="sources card">
+    <h2>Sources &amp; accuracy</h2>
+    <p class="checked">Definitions are based on public federal billing guidance. Sources checked as of October 2026.</p>
+    <ul>
+      <li><a href="https://www.cms.gov" target="_blank" rel="noopener">CMS.gov</a> — official Medicare &amp; Medicaid billing guidance</li>
+      <li><a href="https://www.cms.gov/nosurprises" target="_blank" rel="noopener">No Surprises Act</a> — rules on surprise and balance billing</li>
+      <li><a href="https://www.healthcare.gov/glossary/" target="_blank" rel="noopener">HealthCare.gov glossary</a> — plain-language insurance terms</li>
+    </ul>
   </div>
 
   <footer>
@@ -163,7 +234,6 @@ const DB = {
   "90471": {term:"CPT 90471", meaning:"The administration fee for giving one vaccine — separate from the cost of the vaccine itself, which is usually billed under its own code.", status:"normal", tip:null},
   "99070": {term:"CPT 99070", meaning:"A catch-all code for supplies used during a visit (bandages, splints, trays) beyond what's normally included.", status:"context", tip:"This vague, catch-all code is one of the more commonly disputed ones — ask for an itemized list of exactly what supplies it covers."},
   "j3301": {term:"HCPCS J3301", meaning:"A specific injectable steroid medication (triamcinolone), billed per dose administered.", status:"normal", tip:null},
-
   "not medically necessary": {term:"Not Medically Necessary", meaning:"Your insurer decided this service didn't meet their criteria for being required to treat your condition, so they're denying payment.", status:"verify", tip:"This is one of the most commonly successful things to appeal. Ask your insurer for the specific clinical criteria you didn't meet, and ask your provider to submit supporting documentation."},
   "medically necessary": {term:"Not Medically Necessary", meaning:"Your insurer decided this service didn't meet their criteria for being required to treat your condition, so they're denying payment.", status:"verify", tip:"This is one of the most commonly successful things to appeal. Ask your insurer for the specific clinical criteria you didn't meet, and ask your provider to submit supporting documentation."},
   "allowed amount": {term:"Allowed Amount", meaning:"The maximum your insurer will recognize for a service — usually less than the provider's full sticker price. This is the number your coinsurance is calculated from, not the original billed charge.", status:"normal", tip:null},
@@ -183,7 +253,6 @@ const DB = {
   "remark code": {term:"Remark Code", meaning:"A short code on an EOB giving an additional reason for how a claim was processed — usually explained in a key at the bottom of the same page.", status:"normal", tip:null},
   "write off": {term:"Write-off", meaning:"The portion of a charge the provider has agreed not to collect, usually because of their contract with your insurer. You should not be billed for this.", status:"normal", tip:null},
   "facility fee": {term:"Facility Fee", meaning:"A separate charge for the use of the building/equipment, billed in addition to the doctor's own fee — common at hospital-owned clinics.", status:"context", tip:"Ask if your provider's office is hospital-owned; this fee often surprises patients who didn't expect a second charge."},
-
   "99212": {term:"CPT 99212", meaning:"An office visit for an established patient, straightforward complexity — a very brief, simple check-in. Typically 10-19 minutes.", status:"normal", tip:null},
   "99215": {term:"CPT 99215", meaning:"An office visit for an established patient, high complexity — a longer, more involved visit, often managing several serious or unstable conditions. Typically 40-54 minutes.", status:"context", tip:"This is the highest-level routine office visit code. If your visit was short or simple, it's worth asking what justified this level."},
   "99202": {term:"CPT 99202", meaning:"An office visit for a new patient, straightforward complexity — a brief first visit for a simple issue.", status:"normal", tip:null},
@@ -213,7 +282,6 @@ const DB = {
   "e0601": {term:"HCPCS E0601", meaning:"A CPAP machine for sleep apnea, typically billed as a rental with eventual purchase after a set number of months.", status:"normal", tip:null},
   "a0425": {term:"HCPCS A0425", meaning:"Ground ambulance mileage, billed per mile transported.", status:"normal", tip:null},
   "a0427": {term:"HCPCS A0427", meaning:"Advanced life support ambulance transport, emergency — the base charge for an ALS-equipped emergency ambulance response.", status:"verify", tip:"Ambulance billing is a frequent source of large surprise bills. If out-of-network, check your state's balance-billing protections and the No Surprises Act."},
-
   "patient responsibility": {term:"Patient Responsibility", meaning:"The total amount the EOB says you personally owe after insurance processing — the sum of deductible, copay, and/or coinsurance for that claim.", status:"normal", tip:"Confirm this matches what the provider actually bills you — mismatches between the EOB and the provider's bill are common and worth flagging."},
   "non-covered service": {term:"Non-Covered Service", meaning:"A service your specific plan excludes entirely, meaning insurance won't pay any portion regardless of medical necessity.", status:"verify", tip:"Ask for the exact plan exclusion language. Sometimes services are miscoded as non-covered when they should have been processed normally."},
   "non covered": {term:"Non-Covered Service", meaning:"A service your specific plan excludes entirely, meaning insurance won't pay any portion regardless of medical necessity.", status:"verify", tip:"Ask for the exact plan exclusion language. Sometimes services are miscoded as non-covered when they should have been processed normally."},
@@ -236,10 +304,6 @@ const DB = {
   "network exception": {term:"Network Exception", meaning:"A request for your insurer to cover an out-of-network provider at in-network rates, usually because no in-network option is available or appropriate.", status:"normal", tip:"Worth requesting proactively if you need a specialist and there's genuinely no in-network provider within reasonable distance."},
 };
 
-const ALIASES = [
-  [/^j\s?-?\s?3301$/i, "j3301"]
-];
-
 function norm(s){
   return s.trim().toLowerCase().replace(/[\s_]+/g," ").replace(/[.,;:!?"']/g,"");
 }
@@ -248,13 +312,11 @@ function lookup(raw){
   const q = norm(raw);
   if(!q) return null;
   if(DB[q]) return DB[q];
-  // code-only match (strip spaces/dashes)
   const codeKey = q.replace(/[\s-]/g,"");
   if(DB[codeKey]) return DB[codeKey];
   for(const [key,val] of Object.entries(DB)){
     if(q.includes(key) || key.includes(q)) return val;
   }
-  // bare numeric CPT-looking code with no match
   if(/^\d{5}$/.test(codeKey)){
     return {
       term: "CPT " + codeKey.toUpperCase(),
@@ -279,6 +341,12 @@ function lookup(raw){
   };
 }
 
+const ICONS = {
+  normal: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+  verify: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>',
+  context: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+};
+
 const STATUS_LABEL = {
   normal: {text:"Looks standard", cls:"normal"},
   verify: {text:"Worth a call", cls:"verify"},
@@ -287,10 +355,11 @@ const STATUS_LABEL = {
 
 function resultBlockHTML(label, result){
   const s = STATUS_LABEL[result.status] || STATUS_LABEL.context;
+  const icon = ICONS[result.status] || ICONS.context;
   return `
     <div class="result-head">
       <div class="queried">${label}</div>
-      <div class="badge ${s.cls}">${s.text}</div>
+      <div class="badge ${s.cls}">${icon} ${s.text}</div>
     </div>
     <div class="line">
       <div class="label">TERM</div>
@@ -307,12 +376,41 @@ function resultBlockHTML(label, result){
 function render(raw){
   const result = lookup(raw);
   const el = document.getElementById("result");
-  if(!result){ el.style.display="none"; return; }
+  const empty = document.getElementById("empty-state");
+  if(!result){ el.style.display="none"; empty.style.display="flex"; return; }
   document.getElementById("scan-results").style.display = "none";
-  el.innerHTML = `<div class="result-card">${resultBlockHTML('You searched: "' + escapeHtml(raw.trim()) + '"', result)}</div>`;
+  empty.style.display = "none";
+  el.innerHTML = `<div class="result-card card">${resultBlockHTML('You searched: "' + escapeHtml(raw.trim()) + '"', result)}</div>`;
   el.style.display = "block";
   scheduleAutoClear();
 }
+
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+document.getElementById("go").addEventListener("click", () => {
+  const v = document.getElementById("query").value;
+  if(v.trim()) render(v);
+});
+document.getElementById("query").addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){ const v = e.target.value; if(v.trim()) render(v); }
+});
+
+const EXAMPLES = ["99214", "Not Medically Necessary", "Out-of-Network", "Bundled", "Observation Status", "71046"];
+const chipsEl = document.getElementById("chips");
+EXAMPLES.forEach(ex => {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.textContent = ex;
+  b.addEventListener("click", () => {
+    document.getElementById("query").value = ex;
+    render(ex);
+  });
+  chipsEl.appendChild(b);
+});
 
 // --- Privacy: nothing here is stored anywhere, but we actively wipe the
 // on-screen results too, so sensitive terms don't linger in the browser tab. ---
@@ -328,6 +426,7 @@ function clearAllResults(){
   document.getElementById("scan-results").style.display = "none";
   document.getElementById("scan-results").innerHTML = "";
   document.getElementById("query").value = "";
+  document.getElementById("empty-state").style.display = "flex";
   scanStatus.textContent = "";
   scanFile.value = "";
   privacyBar.style.display = "none";
@@ -355,33 +454,6 @@ document.getElementById("clear-now-btn").addEventListener("click", clearAllResul
 
 document.addEventListener("visibilitychange", () => {
   if(document.visibilityState === "hidden"){ clearAllResults(); }
-});
-
-function escapeHtml(str){
-  const d = document.createElement("div");
-  d.textContent = str;
-  return d.innerHTML;
-}
-
-document.getElementById("go").addEventListener("click", () => {
-  const v = document.getElementById("query").value;
-  if(v.trim()) render(v);
-});
-document.getElementById("query").addEventListener("keydown", (e) => {
-  if(e.key === "Enter"){ const v = e.target.value; if(v.trim()) render(v); }
-});
-
-const EXAMPLES = ["99214", "Not Medically Necessary", "Out-of-Network", "Bundled", "Observation Status", "71046"];
-const chipsEl = document.getElementById("chips");
-EXAMPLES.forEach(ex => {
-  const b = document.createElement("button");
-  b.className = "chip";
-  b.textContent = ex;
-  b.addEventListener("click", () => {
-    document.getElementById("query").value = ex;
-    render(ex);
-  });
-  chipsEl.appendChild(b);
 });
 
 // --- Document scan (uses the optional "sample" runtime capability) ---
@@ -424,6 +496,7 @@ scanBtn.addEventListener("click", async () => {
   scanResultsEl.innerHTML = "";
   scanResultsEl.style.display = "none";
   document.getElementById("result").style.display = "none";
+  document.getElementById("empty-state").style.display = "none";
   try{
     const prompt = "This image is a photo or scan of a medical bill or insurance Explanation of Benefits. Find every distinct CPT code, HCPCS code, and medical billing or insurance phrase visible (for example: 'Not Medically Necessary', 'Coinsurance', 'Out-of-Network', 'Adjustment', 'Deductible'). Return ONLY a JSON array of strings, nothing else. If you find nothing relevant, return an empty array.";
     const items = await sampleFn.json(prompt, {images:[file]});
@@ -443,7 +516,7 @@ scanBtn.addEventListener("click", async () => {
       const result = lookup(String(raw));
       if(result){
         count++;
-        html += `<div class="result-card">${resultBlockHTML('Found: "' + escapeHtml(String(raw).trim()) + '"', result)}</div>`;
+        html += `<div class="result-card card">${resultBlockHTML('Found: "' + escapeHtml(String(raw).trim()) + '"', result)}</div>`;
       }
     });
     scanStatus.textContent = count > 0 ? `Found ${count} item${count===1?"":"s"}:` : "Found text, but nothing matched a known code or term.";
@@ -454,8 +527,6 @@ scanBtn.addEventListener("click", async () => {
     scanStatus.textContent = "Couldn't read that image clearly \u2014 try a sharper photo, better lighting, or type the terms in manually above.";
   }finally{
     scanBtn.disabled = false;
-    // Drop the image reference immediately once we're done with it — it's
-    // never kept around longer than the single scan request needs it.
     scanFile.value = "";
   }
 });
