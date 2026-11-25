@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medical Billing Dictionary</title>
+<style>
+body { margin: 0; background: #faf5ea; color: #1d2a2a; font-family: Georgia, serif; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 80px; }
+h1 { font-size: 36px; margin: 0 0 8px; }
+.sub { color: #4a5a5a; line-height: 1.5; margin: 0 0 20px; }
+.sub a { color: #0f766e; }
+input { width: 100%; box-sizing: border-box; padding: 14px; font-size: 16px; border: 1px solid #c9c2b0; border-radius: 4px; background: #fff; }
+.tabs { margin: 14px 0; }
+.tab { margin: 0 6px 6px 0; padding: 8px 14px; border: 1px solid #c9c2b0; border-radius: 20px; background: transparent; font-size: 14px; cursor: pointer; }
+.tab.on { background: #0f766e; color: #fff; border-color: #0f766e; }
+.status { font-size: 13px; color: #4a5a5a; margin: 6px 0 14px; }
+.entry { background: #fff; border: 1px solid #d8d1bf; border-radius: 4px; padding: 14px 16px; margin-bottom: 10px; }
+.tag { margin-left: 10px; font-size: 12px; color: #0f766e; background: #dff1ee; padding: 2px 8px; border-radius: 10px; }
+.entry p { margin: 8px 0 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Medical Billing Dictionary</h1>
+<p class="sub">Look up a billing term, a CPT code, or an ICD-10 diagnosis code in plain English. <a href="index.html">Back to the decoder</a></p>
+<input id="q" type="text" placeholder="Try coinsurance, 99214, or E11.9" autocomplete="off">
+<div class="tabs" id="tabs"></div>
+<div class="status" id="status"></div>
+<div id="results"></div>
+</div>
+<script src="dictionary-data.js"></script>
+<script src="load-codes.js"></script>
+<script>var FILTERS = ["All", "Billing term", "CPT code", "ICD-10", "Legacy code set"];
+var filter = "All";
+var q = document.getElementById("q");
+var results = document.getElementById("results");
+var statusEl = document.getElementById("status");
+var tabsEl = document.getElementById("tabs");
+
+function low(s) {
+ s = "" + s;
+ return s["toLowerCase"].call(s);
+}
+
+function esc(s) {
+ var d = document.createElement("div");
+ d.textContent = s;
+ return d.innerHTML;
+}
+
+function entryHTML(term, type, def) {
+ return '<div class="entry"><b>' + esc(term) + '</b><span class="tag">' + esc(type) + '</span><p>' + esc(def) + '</p></div>';
+}
+
+function finish(html, count) {
+ statusEl.textContent = count + " result" + (count === 1 ? "" : "s");
+ results.innerHTML = html;
+}
+
+function run(ev) {
+ var text = low(q.value.replace(/^\s+|\s+$/g, ""));
+ var html = "";
+ var count = 0;
+
+ if (filter !== "ICD-10") {
+ var list = DICT.filter(function (x) {
+ var inFilter = filter === "All" || x.type === filter;
+ var matches = !text || low(x.term).indexOf(text) > -1 || low(x.def).indexOf(text) > -1;
+ return inFilter && matches;
+ });
+ list.sort(function (a, b) { return a.term.localeCompare(b.term); });
+ list.forEach(function (x) {
+ html += entryHTML(x.term, x.type, x.def);
+ count++;
+ });
+ }
+
+ var wantCodes = (filter === "All" || filter === "ICD-10") && text.length >= 2;
+ if (!wantCodes) { finish(html, count); return; }
+
+ statusEl.textContent = "Loading ICD-10 codes...";
+ loadICD10(function (codes) {
+ var t = text.replace(".", "");
+ var shown = 0;
+ for (var i = 0; i < codes.length; i++) {
+ var c = codes[i];
+ if (low(c[0].replace(".", "")).indexOf(t) === 0 || low(c[1]).indexOf(text) > -1) {
+ html += entryHTML(c[0], "ICD-10", c[1]);
+ count++;
+ shown++;
+ if (shown >= 50) { break; }
+ }
+ }
+ finish(html, count);
+ });
+}
+
+FILTERS.forEach(function (f) {
+ var b = document.createElement("button");
+ b.className = "tab" + (f === filter ? " on" : "");
+ b.textContent = f;
+ b.addEventListener("click", function (ev) {
+ filter = f;
+ var tabs = document.querySelectorAll(".tab");
+ for (var i = 0; i < tabs.length; i++) {
+ tabs[i].classList.toggle("on", tabs[i].textContent === f);
+ }
+ run(ev);
+ });
+ tabsEl.appendChild(b);
+});
+
+q.addEventListener("input", run);
+run(0);
+</script>
+</body>
+</html

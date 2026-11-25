@@ -1,0 +1,22 @@
+const DICT = [
+ {term:"Coinsurance", type:"Billing term", def:"Your share of the cost after the deductible is met, shown as a percentage of the allowed amount. At 20% coinsurance, you pay 20% and insurance pays 80%."},
+ {term:"Deductible", type:"Billing term", def:"The amount you pay out of pocket each year before your insurance starts sharing costs."},
+ {term:"Copay", type:"Billing term", def:"A fixed fee you pay for a specific type of visit, such as $30 for a primary care visit."},
+ {term:"Allowed Amount", type:"Billing term", def:"The maximum your insurer recognizes for a service. Your coinsurance is calculated from this number."},
+ {term:"Adjustment", type:"Billing term", def:"The gap between the provider's billed charge and the allowed amount. The provider writes this off under their insurance contract, so you owe none of it."},
+ {term:"Explanation of Benefits (EOB)", type:"Billing term", def:"A statement from your insurer showing what was billed, what they paid, and what they say you owe. It summarizes how the claim was processed and serves as an information sheet."},
+ {term:"Out-of-Network", type:"Billing term", def:"The provider has no contract with your insurer, so you may owe the full gap between their charge and what insurance pays. The No Surprises Act protects you in many emergency situations."},
+ {term:"Balance Billing", type:"Billing term", def:"A provider billing you for the difference between their charge and what your insurer paid. The No Surprises Act limits this in most emergency and some in-network facility situations."},
+ {term:"Prior Authorization", type:"Billing term", def:"Approval your insurer requires before a service happens. Providers can sometimes request approval after the fact."},
+ {term:"Observation Status", type:"Billing term", def:"You stayed at the hospital for monitoring without a formal inpatient admission. This changes what insurance covers, so ask directly whether you were admitted."},
+ {term:"Facility Fee", type:"Billing term", def:"A separate charge for the building and equipment, billed on top of the doctor's fee. Hospital-owned clinics commonly add it."},
+ {term:"Not Medically Necessary", type:"Billing term", def:"Your insurer decided the service fell short of their criteria for treating your condition. Appeals succeed often, so ask for the clinical criteria and request your provider's supporting notes."},
+ {term:"99213", type:"CPT code", def:"Office visit, established patient, low-to-moderate complexity. Typically 15-29 minutes."},
+ {term:"99214", type:"CPT code", def:"Office visit, established patient, moderate complexity. Typically 30-39 minutes."},
+ {term:"99395", type:"CPT code", def:"Routine preventive exam for an adult aged 18-39. Insurance usually covers it fully."},
+ {term:"80053", type:"CPT code", def:"Comprehensive metabolic panel, a blood test checking kidney function, liver function, blood sugar, and electrolytes."},
+ {term:"85025", type:"CPT code", def:"Complete blood count (CBC) with differential, checking red cells, white cells, and platelets."},
+ {term:"71046", type:"CPT code", def:"Chest X-ray, two views."},
+ {term:"36415", type:"CPT code", def:"Blood draw (venipuncture), billed separately from the tests run on the blood."},
+ {term:"ICD-9", type:"Legacy code set", def:"The diagnosis code system US billing used until October 1, 2015. Older bills and records carry ICD-9 codes, and ICD-10 replaced them."}
+];
